@@ -42,11 +42,11 @@ module.exports = {
     });
   },
   destroy(req, res, next) {
-    advertisementQueries.deleteAdvertisement(req.params.id, (err, topic) => {
+    advertisementQueries.deleteAdvertisement(req.params.id, (err, advertisement) => {
       if (err) {
         res.redirect(500, `/advertisements/${advertisement.id}`)
       } else {
-        res.redirect(303, "advertisements")
+        res.redirect(303, "/advertisements")
       }
     });
   },

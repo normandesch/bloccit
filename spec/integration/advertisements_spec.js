@@ -129,7 +129,7 @@ describe("routes : advertisements", () => {
       const options = {
         url: `${base}${this.advertisement.id}/update`,
         form: {
-          title: "JavaScript Frameworks",
+          title: "JS Frameworks",
           description: "There are not a lot of them"
         }
       };
@@ -143,7 +143,7 @@ describe("routes : advertisements", () => {
               }
             })
             .then((advertisement) => {
-              expect(advertisement.title).toBe("JavaScript Frameworks");
+              expect(advertisement.title).toBe("JS Frameworks");
               done();
             });
         });
