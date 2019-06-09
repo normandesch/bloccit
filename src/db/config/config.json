@@ -21,6 +21,7 @@
     "username": "root",
     "password": null,
     "host": "127.0.0.1",
+    "database": "database_production",
     "dialect": "postgres",
     "logging": false,
     "operatorsAliases": false,
