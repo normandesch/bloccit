@@ -18,7 +18,7 @@ describe("routes : posts", () => {
       .then((topic) => {
         this.topic = topic;
         Post.create({
-          title: "Snowball Fighting",
+          title: "Snowman Building Competition",
           body: "So much snow!",
           topicId: this.topic.id
         })
@@ -77,7 +77,7 @@ describe("GET /topics/:topicId/posts/:id", () => {
      it("should render a view with the selected post", (done) => {
        request.get(`${base}/${this.topic.id}/posts/${this.post.id}`, (err, res, body) => {
          expect(err).toBeNull();
-         expect(body).toContain("Snowball Fighting");
+         expect(body).toContain("Snowman Building Competition");
          done();
        });
      });
@@ -113,7 +113,7 @@ describe("GET /topics/:topicId/posts/:id/edit", () => {
        request.get(`${base}/${this.topic.id}/posts/${this.post.id}/edit`, (err, res, body) => {
          expect(err).toBeNull();
          expect(body).toContain("Edit Post");
-         expect(body).toContain("Snowball Fighting");
+         expect(body).toContain("Snowman Building Competition");
          done();
        });
      });
@@ -160,4 +160,33 @@ describe("POST /topics/:topicId/posts/:id/update", () => {
    });
 
  });
+
+ it("should not create a new post that fails validations", (done) => {
+       const options = {
+         url: `${base}/${this.topic.id}/posts/create`,
+         form: {
+
+//#1
+           title: "a",
+           body: "b"
+         }
+       };
+
+       request.post(options,
+         (err, res, body) => {
+
+//#2
+           Post.findOne({where: {title: "a"}})
+           .then((post) => {
+               expect(post).toBeNull();
+               done();
+           })
+           .catch((err) => {
+             console.log(err);
+             done();
+           });
+         }
+       );
+     });
+
 });

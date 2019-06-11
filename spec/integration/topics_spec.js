@@ -20,7 +20,6 @@ describe("routes : topics", () => {
           done();
         })
         .catch((err) => {
-          console.log(err);
           done();
         });
 
@@ -65,10 +64,10 @@ describe("routes : topics", () => {
 
     it("should create a new topic and redirect", (done) => {
 
-      //#1
+
       request.post(options,
 
-        //#2
+
         (err, res, body) => {
           Topic.findOne({
               where: {
@@ -88,7 +87,32 @@ describe("routes : topics", () => {
         }
       );
     });
-  });
+
+    it("should not create a new topic that fails validations", (done) => {
+
+          const options ={
+            url: `${base}create`,
+            form: {
+              title: "d",
+              description: "f"
+            }
+          };
+
+          request.post(options, (res, body, err) => {
+            Topic.findOne({where: {title: "d"}})
+            .then((topic) => {
+              expect(topic).toBeNull();
+              done();
+            })
+            .catch((err) => {
+              done();
+            });
+          });
+        });
+
+      });
+
+
 
   describe("GET /topics/:id", () => {
 
@@ -151,7 +175,7 @@ describe("routes : topics", () => {
            url: `${base}${this.topic.id}/update`,
            form: {
              title: "JS Frameworks",
-             description: "There are a lot of them"
+             description: "There is a lot of them"
            }
          };
 //#1
