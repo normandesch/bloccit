@@ -3,29 +3,117 @@ const server = require("../../src/server");
 const base = "http://localhost:3000/topics/";
 const sequelize = require("../../src/db/models/index").sequelize;
 const Topic = require("../../src/db/models").Topic;
+const User = require("../../src/db/models").User;
+
 
 describe("routes : topics", () => {
   beforeEach((done) => {
     this.topic;
+    this.post;
+    this.user;
+
     sequelize.sync({
       force: true
     }).then((res) => {
 
-      Topic.create({
-          title: "JS Frameworks",
-          description: "There is a lot of them"
-        })
-        .then((topic) => {
-          this.topic = topic;
-          done();
-        })
-        .catch((err) => {
-          done();
-        });
 
+      User.create({
+          email: "starman@tesla.com",
+          password: "Trekkie4lyfe"
+        })
+        .then((user) => {
+          this.user = user; //store the user
+
+
+          Topic.create({
+              title: "Expeditions to Alpha Centauri",
+              description: "A compilation of reports from recent visits to the star system.",
+
+
+              posts: [{
+                title: "My first visit to Proxima Centauri b",
+                body: "I saw some rocks.",
+                userId: this.user.id
+              }]
+            }, {
+
+
+              include: {
+                model: Post,
+                as: "posts"
+              }
+            })
+            .then((topic) => {
+              this.topic = topic; //store the topic
+              this.post = topic.posts[0]; //store the post
+              done();
+            })
+        })
     });
-
   });
+
+  describe("admin user performing CRUD actions for Topic", () => {
+
+// #2: // before each test in admin user context, send an authentication request
+       // to a route we will create to mock an authentication request
+     beforeEach((done) => {
+       User.create({
+         email: "admin@example.com",
+         password: "123456",
+         role: "admin"
+       })
+       .then((user) => {
+         request.get({         // mock authentication
+           url: "http://localhost:3000/auth/fake",
+           form: {
+             role: user.role,     // mock authenticate as admin user
+             userId: user.id,
+             email: user.email
+           }
+         },
+           (err, res, body) => {
+             done();
+           }
+         );
+       });
+     });
+
+// COPY AND PASTE THE OLD TESTS HERE
+     describe("GET /topics", () => { /* suite implementation */ });
+     describe("GET /topics/new", () => { /* suite implementation */ });
+     describe("POST /topics/create", () => { /* suite implementation */ });
+     describe("GET /topics/:id", () => { /* suite implementation */ });
+     describe("POST /topics/:id/destroy", () => { /* suite implementation */ });
+     describe("GET /topics/:id/edit", () => { /* suite implementation */ });
+     describe("POST /topics/:id/update", () => { /* suite implementation */ });
+   })
+
+ // #3: define the member user context
+   describe("member user performing CRUD actions for Topic", () => {
+
+ // #4: Send mock request and authenticate as a member user
+     beforeEach((done) => {
+       request.get({
+         url: "http://localhost:3000/auth/fake",
+         form: {
+           role: "member"
+         }
+       },
+         (err, res, body) => {
+           done();
+         }
+       );
+     });
+
+// COPY AND PASTE THE OLD TESTS HERE
+     describe("GET /topics", () => { /* suite implementation */ });
+     describe("GET /topics/new", () => { /* suite implementation */ });
+     describe("POST /topics/create", () => { /* suite implementation */ });
+     describe("GET /topics/:id", () => { /* suite implementation */ });
+     describe("POST /topics/:id/destroy", () => { /* suite implementation */ });
+     describe("GET /topics/:id/edit", () => { /* suite implementation */ });
+     describe("POST /topics/:id/update", () => { /* suite implementation */ });
+   });
 
   describe("GET /topics", () => {
 
@@ -90,27 +178,31 @@ describe("routes : topics", () => {
 
     it("should not create a new topic that fails validations", (done) => {
 
-          const options ={
-            url: `${base}create`,
-            form: {
-              title: "d",
-              description: "f"
+      const options = {
+        url: `${base}create`,
+        form: {
+          title: "d",
+          description: "f"
+        }
+      };
+
+      request.post(options, (res, body, err) => {
+        Topic.findOne({
+            where: {
+              title: "d"
             }
-          };
-
-          request.post(options, (res, body, err) => {
-            Topic.findOne({where: {title: "d"}})
-            .then((topic) => {
-              expect(topic).toBeNull();
-              done();
-            })
-            .catch((err) => {
-              done();
-            });
+          })
+          .then((topic) => {
+            expect(topic).toBeNull();
+            done();
+          })
+          .catch((err) => {
+            done();
           });
-        });
-
       });
+    });
+
+  });
 
 
 
@@ -170,30 +262,32 @@ describe("routes : topics", () => {
 
   describe("POST /topics/:id/update", () => {
 
-     it("should update the topic with the given values", (done) => {
-        const options = {
-           url: `${base}${this.topic.id}/update`,
-           form: {
-             title: "JS Frameworks",
-             description: "There is a lot of them"
-           }
-         };
-//#1
-         request.post(options,
-           (err, res, body) => {
+    it("should update the topic with the given values", (done) => {
+      const options = {
+        url: `${base}${this.topic.id}/update`,
+        form: {
+          title: "JS Frameworks",
+          description: "There is a lot of them"
+        }
+      };
 
-           expect(err).toBeNull();
-//#2
-           Topic.findOne({
-             where: { id: this.topic.id }
-           })
-           .then((topic) => {
-             expect(topic.title).toBe("JS Frameworks");
-             done();
-           });
-         });
-     });
+      request.post(options,
+        (err, res, body) => {
 
-   });
+          expect(err).toBeNull();
+
+          Topic.findOne({
+              where: {
+                id: this.topic.id
+              }
+            })
+            .then((topic) => {
+              expect(topic.title).toBe("JS Frameworks");
+              done();
+            });
+        });
+    });
+
+  });
 
 });

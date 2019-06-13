@@ -5,8 +5,15 @@ const postRoutes = require ("../routes/posts");
 const userRoutes = require("../routes/users");
 const flairRoutes = require ("../routes/flairs");
 
+
 module.exports = {
   init(app){
+
+if (process.env.NODE_ENV === "test") {
+  const mockAuth = require("../../spec/support/mock-auth.js");
+  mockAuth.fakeIt(app);
+}
+
     app.use(staticRoutes);
     app.use(topicRoutes);
     app.use(advertisementRoutes);
