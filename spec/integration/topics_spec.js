@@ -3,6 +3,7 @@ const server = require("../../src/server");
 const base = "http://localhost:3000/topics/";
 const sequelize = require("../../src/db/models/index").sequelize;
 const Topic = require("../../src/db/models").Topic;
+const Post= require("../../src/db/models").Post;
 const User = require("../../src/db/models").User;
 
 
@@ -26,7 +27,7 @@ describe("routes : topics", () => {
 
 
           Topic.create({
-              title: "Expeditions to Alpha Centauri",
+              title: "JS Frameworks",
               description: "A compilation of reports from recent visits to the star system.",
 
 
