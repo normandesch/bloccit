@@ -28,7 +28,7 @@ describe("routes : posts", () => {
           title: "Winter Games",
           description: "Post your Winter Games stories.",
           posts: [{
-            title: "Snowball Fighting",
+            title: "Snowman Building Competition",
             body: "So much snow!",
             userId: this.user.id
           }]
@@ -74,7 +74,7 @@ describe("POST /topics/:topicId/posts/create", () => {
 
            Post.findOne({where: {title: "Watching snow melt"}})
            .then((post) => {
-             expect(post).not.toBeNull();
+             expect(post).toBeNull();
              expect(post.title).toBe("Watching snow melt");
              expect(post.body).toBe("Without a doubt my favoriting things to do besides watching paint dry!");
              expect(post.topicId).not.toBeNull();
@@ -117,7 +117,7 @@ describe("GET /topics/:topicId/posts/:id", () => {
      it("should render a view with the selected post", (done) => {
        request.get(`${base}/${this.topic.id}/posts/${this.post.id}`, (err, res, body) => {
          expect(err).toBeNull();
-         expect(body).toContain("Snowball Fighting");
+         expect(body).toContain("Snowman Building Competition");
          done();
        });
      });
@@ -141,7 +141,7 @@ describe("GET /topics/:topicId/posts/:id/edit", () => {
        request.get(`${base}/${this.topic.id}/posts/${this.post.id}/edit`, (err, res, body) => {
          expect(err).toBeNull();
          expect(body).toContain("Edit Post");
-         expect(body).toContain("Snowball Fighting");
+         expect(body).toContain("Snowman Building Competition");
          done();
        });
      });
