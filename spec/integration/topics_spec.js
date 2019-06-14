@@ -234,12 +234,12 @@ describe("routes : topics", () => {
 
           //#3
           request.post(`${base}${this.topic.id}/destroy`, (err, res, body) => {
-            Topic.all()
-              .then((topics) => {
-                expect(err).toBeNull();
-                expect(topics.length).toBe(topicCountBeforeDelete - 1);
-                done();
-              })
+            Topic.findAll()
+                .then((myTopics) => {
+                  expect(err).toBeNull();
+                  expect(myTopics.length).toBe(topicCountBeforeDelete - 1);
+                  done();
+                })
 
           });
         });
