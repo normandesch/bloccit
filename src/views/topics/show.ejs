@@ -1,54 +1,58 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <% include ../static/partials/head.ejs %>
+  </head>
+  <body>
+    <% include ../static/partials/navbar.ejs %>
 
-<head>
-  <% include ../static/partials/head.ejs %>
-</head>
+    <main class="container">
+      <h1><%= topic.title %></h1>
+      <% if(currentUser) { %>
+        <a href="/topics/<%= topic.id %>/posts/new" class="btn btn-success">New Post</a>
+        <a href="/topics/<%= topic.id %>/flairs/new" class="btn btn-success">New Flair</a>
 
-<body>
-  <% include ../static/partials/navbar.ejs %>
+        <% if(currentUser.isAdmin()) { %>
 
-  <main class="container">
-    <h1><%= topic.title %></h1>
-    <a href="/topics/<%= topic.id %>/edit" class="btn btn-warning">Edit</a>
-    <% if(currentUser) { %>
-     <a href="/topics/<%= topic.id %>/posts/new" class="btn btn-success">New Post</a>
-     <% if(currentUser.isAdmin()) { %>
-   <% } %>
-    <a href="/topics/<%= topic.id %>/flairs/new" class="btn btn-success">New Flair</a>
-    <form style="display:initial" action="/topics/<%= topic.id %>/destroy" method="post">
-      <button type="submit" class="btn btn-danger">Delete</button>
-    </form>
-    <p><%= topic.description %></p>
-    <hr>
+          <a href="/topics/<%= topic.id %>/edit" class="btn btn-warning">Edit</a>
+          <form style="display:initial" action="/topics/<%= topic.id %>/destroy" method="post">
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
 
-    <h2>Posts</h2>
-
-    <ul class="list-group">
-      <% topic.posts.forEach((post) => { %>
-      <li class="list-group-item">
-        <a href="/topics/<%= topic.id %>/posts/<%= post.id %>"> <%= post.title %> </a>
-      </li>
-      <% }) %>
-    </ul>
-
-    <hr>
-
-    <h3> Flairs </h3>
-    <ul class="list-flair">
-      <% topic.flairs.forEach((flair) => { %>
-      <li class="list-flair-item">
-        <a href="/topics/<%= topic.id %>/flairs/<%= flair.id %>" style="background-color: <%=flair.color%>"> <%=flair.name%> </a>
-      </li>
-      <% }) %>
-
-    </ul>
+        <% } %>
+      <% } %>
 
 
-  </main>
+      <p><%= topic.description %></p>
 
-  <% include ../static/partials/baseScripts.ejs %>
+      <hr>
 
-</body>
+      <h2> Posts </h2>
 
+      <ul class="list-group">
+        <% topic.posts.forEach((post) => { %>
+          <li class="list-group-item">
+            <a href="/topics/<%= topic.id %>/posts/<%= post.id %>"> <%= post.title %> </a>
+          </li>
+        <% }) %>
+      </ul>
+
+      <hr>
+
+      <h3> Flairs </h3>
+      <ul class = "list-flair">
+        <% topic.flairs.forEach((flair) => { %>
+          <li class="list-flair-item">
+            <a href="/topics/<%= topic.id %>/flairs/<%= flair.id %>" style="background-color: <%=flair.color%>" >  <%=flair.name%> </a>
+          </li>
+        <% }) %>
+
+      </ul>
+
+
+    </main>
+
+    <% include ../static/partials/baseScripts.ejs %>
+
+  </body>
 </html>
