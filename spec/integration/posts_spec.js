@@ -323,7 +323,7 @@ describe("GET /topics/:topicId/posts/:id", () => {
 
    });
 
-describe("POST /topics/:topicId/posts/:id/destroy", () => {
+describe("POST /topics/:topicId/posts/:id/", () => {
 
      it("should delete the post with the associated ID", (done) => {
 

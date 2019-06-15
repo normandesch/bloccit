@@ -3,6 +3,7 @@ const topicRoutes = require("../routes/topics");
 const advertisementRoutes = require("../routes/advertisements");
 const postRoutes = require ("../routes/posts");
 const userRoutes = require("../routes/users");
+const commentRoutes = require("../routes/comments");
 const flairRoutes = require ("../routes/flairs");
 
 
@@ -19,6 +20,7 @@ if (process.env.NODE_ENV === "test") {
     app.use(advertisementRoutes);
     app.use(postRoutes);
     app.use(userRoutes);
+    app.use(commentRoutes);
     app.use(flairRoutes);
   }
 }
