@@ -1,47 +1,49 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <% include ../static/partials/head.ejs %>
+ 	</head>
+  <body>
+    <% include ../static/partials/navbar.ejs %>
 
-<head>
-  <% include ../static/partials/head.ejs %>
-</head>
+    <main class="container">
+			<% include ../static/partials/messages.ejs %>
+			<div style="display: flex; align-items:center;">
+       <% if(currentUser) { %>
 
-<body>
-  <% include ../static/partials/navbar.ejs %>
+       <% } %>
+       <h1><%= post.title %></h1>
+    	</div>
+     	<a href="/topics/<%= post.topicId %>/posts/<%= post.id %>/edit" class="btn btn-warning">Edit</a>
+      <form style="display:initial" action="/topics/<%= post.topicId %>/posts/<%= post.id %>/destroy" method="post">
+      	<button type="submit" class="btn btn-danger">Delete</button>
+      </form>
+			<% if(currentUser) { %>
+   		<% } %>
+      <p><%= post.body %></p>
 
-  <main class="container">
-    <h1><%= post.title %></h1>
-    <% if(currentUser && (currentUser.isOwner || currentUser.isAdmin)) { %>
-    <a href="/topics/<%= post.topicId %>/posts/<%= post.id %>/edit" class="btn btn-warning">Edit</a>
+			<section id="comment-form">
 
-    <form style="display:initial" action="/topics/<%= post.topicId %>/posts/<%= post.id %>/destroy" method="post">
-      <button type="submit" class="btn btn-danger">Delete</button>
-    </form>
-    <% } %>
-
-    <p><%= post.body %></p>
-
-    <section id="comment-form">
-
-      <% if(currentUser) { %>
+ <!-- We only show the form if there is a signed in user. -->
+    <% if(currentUser) { %>
       <% include ../comments/new.ejs %>
-      <% } %>
-    </section>
+    <% } %>
+   </section>
 
-
-    <section id="comment-list">
-      <% if(post.comments) { %>
+ <!-- We want to list the comments associated with this post. We eager load the comments when we retrieve the post, so they're available on a property called  comments. We check if it is present and if so, render each comment -->
+   <section id="comment-list">
+    <% if(post.comments) { %>
       <% post.comments.forEach((comment) => { %>
-
-
-      <%- include("../comments/show.ejs", {comment}) %>
+ <!-- For each comment, we render a partial containing the markup needed to render each comment. Notice the opening EJS tag contains a - which will let us pass the variable unescaped. -->
+        <%- include("../comments/show.ejs", {comment}) %>
       <% }) %>
-      <% } %>
-    </section>
+    <% } %>
+   </section>
 
-  </main>
 
-  <% include ../static/partials/baseScripts.ejs %>
+    </main>
 
-</body>
+    <% include ../static/partials/baseScripts.ejs %>
 
+  </body>
 </html>
