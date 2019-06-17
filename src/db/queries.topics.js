@@ -6,7 +6,7 @@ module.exports = {
 
 
   getAllTopics(callback){
-    return Topic.all()
+    return Topic.findAll()
 
 
     .then((topics) => {

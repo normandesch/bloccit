@@ -399,4 +399,141 @@ describe("POST /topics/:topicId/posts/:id/update", () => {
 
    });
 
+
+   describe("signed in user performing CRUD actions for Comment", () => {
+
+     beforeEach((done) => {
+       this.atlernateUser;
+       this.alternatePost;
+
+       User.create({
+           email: "ali@apple.com",
+           password: "123456789",
+           comments: [{
+             body: "hello world",
+             postId: this.post.id
+           }]
+         }, {
+           include: {
+             model: Post,
+             as: "posts"
+           }
+         })
+
+           request.get({
+             url: "http://localhost:3000/auth/fake",
+             form: {
+               role: "member",
+               userId: this.user.id
+             }
+           }, (err, res, body) => {
+             done();
+           });
+
+     });
+
+     describe("POST /topics/:topicId/posts/postId/posts/create", () => {
+
+       it("should create a new post and redirect", (done) => {
+         const options = {
+           url: `${base}${this.topic.id}/posts/${this.post.id}/posts/create`,
+           form: {
+             body: "This post is amazing!"
+           }
+         };
+         request.post(options, (res, err, body) => {
+           Post.findOne({
+               where: {
+                 body: "This post is amazing!"
+               }
+             })
+             .then((post) => {
+               expect(post).notToBeNull();
+               expect(post.body).toBe("This post is amazing!");
+               expect(post.id).notToBeNull();
+               done();
+             })
+             .catch((err) => {
+               console.log(err);
+               done();
+             });
+         });
+       });
+     });
+
+     describe("POST /topics/:topicId/posts/:postId/posts/:id/destroy", () => {
+
+       it("should delete the posts with the associated ID", (done) => {
+         Post.findAll()
+           .then((post) => {
+             const postCountBeforeDelete = posts.length;
+
+             expect(postCountBeforeDelete).toBe(1);
+
+             request.post(`${base}${this.topic.id}/posts/${this.post.id}/posts/${this.post.id}/destroy`, (err, res, body) => {
+               expect(res.statusCode).toBe(302);
+               Post.findAll()
+                 .then((posts) => {
+                   expect(err).toBeNull();
+                   expect(posts.length).toBe(postCountBeforeDelete - 1);
+                   done();
+                 })
+             });
+           })
+       });
+
+       it("member should not delete the post of another member", (done) => {
+         Post.findAll()
+           .then((posts) => {
+             const postCountBeforeDelete = posts.length;
+
+             expect(postCountBeforeDelete).toBe(1);
+
+             request.post(`${base}${this.topic.id}/posts/${this.post.id}/posts/${this.post.id}/destroy`, (err, res, body) => {
+
+               Post.findAll()
+                 .then((posts) => {
+                   expect(err).toBeNull();
+                   expect(posts.length).toBe(postCountBeforeDelete);
+                   done();
+                 })
+             });
+           })
+       });
+
+       it("admin is able to delete a post from members", (done) => {
+         request.get({
+           url: "http://localhost:3000/auth/fake",
+           form: {
+             role: "admin",
+             userId: this.user.id
+           }
+         }, (err, res, body) => {
+           done();
+         });
+         Post.findAll()
+           .then((posts) => {
+
+             const postCountBeforeDelete = posts.length;
+
+             expect(postCountBeforeDelete).toBe(1);
+
+             request.post(`${base}${this.topic.id}/posts/${this.post.id}/posts/${this.post.id}/destroy`, (err, res, body) => {
+               Post.findAll()
+                 .then((posts) => {
+                   expect(err).toBeNull();
+                   expect(posts.length).toBe(postCountBeforeDelete);
+                   done();
+                 })
+             });
+           })
+       });
+
+
+
+     });
+
+
+   });
+
 });
