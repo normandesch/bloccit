@@ -1,49 +1,54 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <% include ../static/partials/head.ejs %>
- 	</head>
-  <body>
-    <% include ../static/partials/navbar.ejs %>
 
-    <main class="container">
-			<% include ../static/partials/messages.ejs %>
-			<div style="display: flex; align-items:center;">
-       <% if(currentUser) { %>
+<head>
+  <% include ../static/partials/head.ejs %>
+</head>
 
-       <% } %>
-       <h1><%= post.title %></h1>
-    	</div>
-     	<a href="/topics/<%= post.topicId %>/posts/<%= post.id %>/edit" class="btn btn-warning">Edit</a>
-      <form style="display:initial" action="/topics/<%= post.topicId %>/posts/<%= post.id %>/destroy" method="post">
-      	<button type="submit" class="btn btn-danger">Delete</button>
-      </form>
-			<% if(currentUser) { %>
-   		<% } %>
-      <p><%= post.body %></p>
+<body>
+  <% include ../static/partials/navbar.ejs %>
 
-			<section id="comment-form">
+  <main class="container">
+    <% include ../static/partials/messages.ejs %>
 
- <!-- We only show the form if there is a signed in user. -->
+    <div style="display: flex; align-items:center;">
+      <% if(currentUser) { %>
+      <% include ../votes/voting.ejs %>
+      <% } %>
+      <h1><%= post.title %></h1>
+    </div>
+
+    <a href="/topics/<%= post.topicId %>/posts/<%= post.id %>/edit" class="btn btn-warning">Edit</a>
+    <form style="display:initial" action="/topics/<%= post.topicId %>/posts/<%= post.id %>/destroy" method="post">
+      <button type="submit" class="btn btn-danger">Delete</button>
+    </form>
     <% if(currentUser) { %>
+    <% } %>
+    <p><%= post.body %></p>
+
+    <section id="comment-form">
+
+      <!-- We only show the form if there is a signed in user. -->
+      <% if(currentUser) { %>
       <% include ../comments/new.ejs %>
-    <% } %>
-   </section>
+      <% } %>
+    </section>
 
- <!-- We want to list the comments associated with this post. We eager load the comments when we retrieve the post, so they're available on a property called  comments. We check if it is present and if so, render each comment -->
-   <section id="comment-list">
-    <% if(post.comments) { %>
+    <!-- We want to list the comments associated with this post. We eager load the comments when we retrieve the post, so they're available on a property called  comments. We check if it is present and if so, render each comment -->
+    <section id="comment-list">
+      <% if(post.comments) { %>
       <% post.comments.forEach((comment) => { %>
- <!-- For each comment, we render a partial containing the markup needed to render each comment. Notice the opening EJS tag contains a - which will let us pass the variable unescaped. -->
-        <%- include("../comments/show.ejs", {comment}) %>
+      <!-- For each comment, we render a partial containing the markup needed to render each comment. Notice the opening EJS tag contains a - which will let us pass the variable unescaped. -->
+      <%- include("../comments/show.ejs", {comment}) %>
       <% }) %>
-    <% } %>
-   </section>
+      <% } %>
+    </section>
 
 
-    </main>
+  </main>
 
-    <% include ../static/partials/baseScripts.ejs %>
+  <% include ../static/partials/baseScripts.ejs %>
 
-  </body>
+</body>
+
 </html>
