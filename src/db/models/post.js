@@ -66,5 +66,22 @@ module.exports = (sequelize, DataTypes) => {
       });
   };
 
+  Post.prototype.hasUpvoteFor = function(userId) {
+    let hasUpvote = false;
+    this.votes.find((v) => {
+      if (v.userId === userId && v.value === 1) hasUpvote = true;
+    });
+
+    return hasUpvote;
+  };
+  Post.prototype.hasDownvoteFor = function(userId) {
+    let hasDownvote = false;
+    this.votes.find((v) => {
+      if ((v.userId) === userId && v.value === -1) hasDownvote = true
+    })
+
+    return hasDownvote;
+  };
+
   return Post;
 };

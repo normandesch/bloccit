@@ -131,6 +131,21 @@ describe("Vote", () => {
         })
     });
 
+    it("should not create a vote with a value of anything other thatn 1 or -1", (done) => {
+      Vote.create({
+          value: 2,
+          postId: this.post.id,
+          userId: this.user.id
+        })
+        .then((vote) => {
+          done();
+        })
+        .catch((err) => {
+          expect(err.message).toContain("Validation isIn on value failed");
+          done();
+        })
+    });
+
   });
 
   describe("#setUser()", () => {
@@ -197,61 +212,61 @@ describe("Vote", () => {
 
     it("should associate a post and a vote together", (done) => {
 
-      Vote.create({           // create a vote on `this.post`
-        value: -1,
-        postId: this.post.id,
-        userId: this.user.id
-      })
-      .then((vote) => {
-        this.vote = vote;     // store it
-
-        Post.create({         // create a new post
-          title: "Dress code on Proxima b",
-          body: "Spacesuit, space helmet, space boots, and space gloves",
-          topicId: this.topic.id,
+      Vote.create({ // create a vote on `this.post`
+          value: -1,
+          postId: this.post.id,
           userId: this.user.id
         })
-        .then((newPost) => {
+        .then((vote) => {
+          this.vote = vote; // store it
 
-          expect(this.vote.postId).toBe(this.post.id); // check vote not associated with newPost
+          Post.create({ // create a new post
+              title: "Dress code on Proxima b",
+              body: "Spacesuit, space helmet, space boots, and space gloves",
+              topicId: this.topic.id,
+              userId: this.user.id
+            })
+            .then((newPost) => {
 
-          this.vote.setPost(newPost)              // update post reference for vote
-          .then((vote) => {
+              expect(this.vote.postId).toBe(this.post.id); // check vote not associated with newPost
 
-            expect(vote.postId).toBe(newPost.id); // ensure it was updated
-            done();
+              this.vote.setPost(newPost) // update post reference for vote
+                .then((vote) => {
 
-          });
+                  expect(vote.postId).toBe(newPost.id); // ensure it was updated
+                  done();
+
+                });
+            })
+            .catch((err) => {
+              console.log(err);
+              done();
+            });
+        });
+    });
+
+  });
+
+  // #2
+  describe("#getPost()", () => {
+
+    it("should return the associated post", (done) => {
+      Vote.create({
+          value: 1,
+          userId: this.user.id,
+          postId: this.post.id
+        })
+        .then((vote) => {
+          this.comment.getPost()
+            .then((associatedPost) => {
+              expect(associatedPost.title).toBe("My first visit to Proxima Centauri b");
+              done();
+            });
         })
         .catch((err) => {
           console.log(err);
           done();
         });
-      });
-    });
-
-  });
-
-// #2
-  describe("#getPost()", () => {
-
-    it("should return the associated post", (done) => {
-      Vote.create({
-        value: 1,
-        userId: this.user.id,
-        postId: this.post.id
-      })
-      .then((vote) => {
-        this.comment.getPost()
-        .then((associatedPost) => {
-          expect(associatedPost.title).toBe("My first visit to Proxima Centauri b");
-          done();
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        done();
-      });
     });
 
   });
