@@ -466,16 +466,17 @@ describe("POST /topics/:topicId/posts/:id/update", () => {
        it("should delete the posts with the associated ID", (done) => {
          Post.findAll()
            .then((post) => {
-             const postCountBeforeDelete = posts.length;
+             const postsCountBeforeDelete = post.length;
 
-             expect(postCountBeforeDelete).toBe(1);
+             expect(postsCountBeforeDelete).toBe(1);
 
-             request.post(`${base}${this.topic.id}/posts/${this.post.id}/posts/${this.post.id}/destroy`, (err, res, body) => {
-               expect(res.statusCode).toBe(302);
+             request.post(`${base}${this.topic.id}/posts/${this.post.id}/destroy`, (err, res, body) => {
+               expect(res.statusCode).toBe(404);
+               console.log(err)
                Post.findAll()
                  .then((posts) => {
                    expect(err).toBeNull();
-                   expect(posts.length).toBe(postCountBeforeDelete - 1);
+                   expect(post.length).toBe(postsCountBeforeDelete);
                    done();
                  })
              });
@@ -485,16 +486,16 @@ describe("POST /topics/:topicId/posts/:id/update", () => {
        it("member should not delete the post of another member", (done) => {
          Post.findAll()
            .then((posts) => {
-             const postCountBeforeDelete = posts.length;
+             const postsCountBeforeDelete = post.length;
 
-             expect(postCountBeforeDelete).toBe(1);
+             expect(postsCountBeforeDelete).toBe(1);
 
              request.post(`${base}${this.topic.id}/posts/${this.post.id}/posts/${this.post.id}/destroy`, (err, res, body) => {
 
                Post.findAll()
                  .then((posts) => {
                    expect(err).toBeNull();
-                   expect(posts.length).toBe(postCountBeforeDelete);
+                   expect(post.length).toBe(postsCountBeforeDelete);
                    done();
                  })
              });
@@ -514,15 +515,15 @@ describe("POST /topics/:topicId/posts/:id/update", () => {
          Post.findAll()
            .then((posts) => {
 
-             const postCountBeforeDelete = posts.length;
+             const postsCountBeforeDelete = post.length;
 
-             expect(postCountBeforeDelete).toBe(1);
+             expect(postsCountBeforeDelete).toBe(1);
 
              request.post(`${base}${this.topic.id}/posts/${this.post.id}/posts/${this.post.id}/destroy`, (err, res, body) => {
                Post.findAll()
                  .then((posts) => {
                    expect(err).toBeNull();
-                   expect(posts.length).toBe(postCountBeforeDelete);
+                   expect(post.length).toBe(postsCountBeforeDelete);
                    done();
                  })
              });
