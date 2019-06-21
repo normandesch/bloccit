@@ -9,4 +9,4 @@ router.post("/topics/:topicId/flairs/:id/destroy", flairController.destroy);
 router.get("/topics/:topicId/flairs/:id/edit", flairController.edit);
 router.post("/topics/:topicId/flairs/:id/update", flairController.update);
 
-module.exports = router;
+module.exports = router; 

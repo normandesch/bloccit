@@ -266,9 +266,9 @@ describe("POST /topics/:topicId/posts/create", () => {
 
            Post.findOne({where: {title: "Watching snow melt"}})
            .then((post) => {
-             expect(post).toBeNull();
+             expect(post).not.toBeNull();
              expect(post.title).toBe("Watching snow melt");
-             expect(post.body).toBe("Without a doubt my favoriting things to do besides watching paint dry!");
+             expect(post.body).toBe("Without a doubt my favorite things to do besides watching paint dry!");
              expect(post.topicId).not.toBeNull();
              done();
            })
