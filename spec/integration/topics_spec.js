@@ -158,7 +158,7 @@ describe("routes : topics", () => {
       it("should delete the topic with the associated ID", (done) => {
 
 
-        Topic.findAll()
+        Topic.all()
           .then((topics) => {
 
 
@@ -168,10 +168,10 @@ describe("routes : topics", () => {
 
 
             request.post(`${base}${this.topic.id}/destroy`, (err, res, body) => {
-              Topic.findAll()
+              Topic.all()
                 .then((topics) => {
                   expect(err).toBeNull();
-                  expect(topics.length).toBe(1);
+                  expect(topics.length).toBe(topicCountBeforeDelete - 1);
                   done();
                 })
 
@@ -345,7 +345,7 @@ describe("routes : topics", () => {
       it("should delete the topic with the associated ID", (done) => {
 
 
-        Topic.findAll()
+        Topic.all()
           .then((topics) => {
 
 
@@ -355,7 +355,7 @@ describe("routes : topics", () => {
 
 
             request.post(`${base}${this.topic.id}/destroy`, (err, res, body) => {
-              Topic.findAll()
+              Topic.all()
                 .then((topics) => {
                   expect(topics.length).toBe(topicCountBeforeDelete);
                   done();

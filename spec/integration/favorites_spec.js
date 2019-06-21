@@ -86,7 +86,7 @@ describe("routes : favorites", () => {
 
           request.post(options,
             (err, res, body) => {
-              Favorite.all()
+              Favorite.findAll()
               .then((favorite) => {
                 expect(favCountBeforeCreate).toBe(favorite.length);
                 done();
@@ -163,11 +163,13 @@ describe("routes : favorites", () => {
             const favorite = favorites[0];
             favCountBeforeDelete = favorites.length;
 
-            request.post(`${base}${this.topic.id}/posts/${this.post.id}/favorites/${favorite.id}/destroy`,
+            expect(favCountBeforeDelete).toBe(1);
+
+            request.post(`${base}${this.topic.id}/posts/${this.post.id}/favorites/destroy`,
               (err, res, body) => {
                 this.post.getFavorites()
                 .then((favorites) => {
-                  expect(favorites.length).toBe(favCountBeforeDelete - 1);
+                  expect(favorites.length).toBe(favCountBeforeDelete -1);
                   done();
                 });
               }
