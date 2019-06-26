@@ -4,99 +4,70 @@ const Post = require("../../src/db/models").Post;
 const User = require("../../src/db/models").User;
 
 describe("Topic", () => {
-
-  beforeEach((done) => {
+  beforeEach(done => {
     this.topic;
     this.post;
     this.user;
 
-    sequelize.sync({force: true}).then((res) => {
-
-
+    sequelize.sync({
+      force: true
+    }).then(res => {
       User.create({
         email: "starman@tesla.com",
         password: "Trekkie4lyfe"
-      })
-      .then((user) => {
+      }).then(user => {
         this.user = user;
-
 
         Topic.create({
           title: "Expeditions to Alpha Centauri",
           description: "A compilation of reports from recent visits to the star system.",
-
-
           posts: [{
             title: "My first visit to Proxima Centauri b",
             body: "I saw some rocks.",
             userId: this.user.id
           }]
         }, {
-
-
           include: {
             model: Post,
             as: "posts"
           }
-        })
-        .then((topic) => {
-          this.topic = topic; //store the topic
-          this.post = topic.posts[0]; //store the post
+        }).then(topic => {
+          this.topic = topic;
+          this.post = topic.posts[0];
           done();
-        })
-      })
+        });
+      });
     });
   });
 
   describe("#create()", () => {
-    it("should create a topic object with a title,and description", (done) => {
+    it("should create a topic with a title and a description", done => {
       Topic.create({
-        title: "Pros and Cons of Brexit",
-        description: "A review of the pros and cons of Brexit",
-
-      })
-      .then((topic) => {
-        expect(topic.title).toBe("Pros and Cons of Brexit");
-        expect(topic.description).toBe("A review of the pros and cons of Brexit");
-        done();
-
-      })
-      .catch((err) => {
-        console.log(err);
-        done();
-      });
-    });
-  });
-  describe("#getPost()", () => {
-
-    it("should associate a topic and a post together", (done) => {
-
-      Post.create({
-        title: "NBA Review",
-        body: "This is a NBA Season review",
-        topicId:this.topic.id,
-        userId: this.user.id
-      })
-
-      .then((newPost) => {
-        expect(newPost.topicId).toBe(this.topic.id);
-        newPost.setTopic(this.topic)
-        .then((post) => {
-
-          expect(post.topicId).toBe(this.topic.id);
-          this.topic.getPosts()
-          .then((associatedPosts) => {
-            expect(associatedPosts[0].title).toBe("My first visit to Proxima Centauri b"
+          title: "Expeditions to Alpha Centauri",
+          description: "A compilation of reports from recent visits to the star system."
+        })
+        .then(topic => {
+          expect(topic.title).toBe("Expeditions to Alpha Centauri");
+          expect(topic.description).toBe(
+            "A compilation of reports from recent visits to the star system."
           );
-          expect(associatedPosts[1].title).toBe("NBA Review")
-
+          done();
+        })
+        .catch(err => {
+          console.log(err);
           done();
         });
-        done();
+    });
+  });
 
+  describe("#getPosts()", () => {
+    it("should return the associated posts", done => {
+      this.topic.getPosts().then(associatedposts => {
+        expect(associatedposts[0].title).toBe(
+          "My first visit to Proxima Centauri b"
+        );
+        done();
       });
     });
-
   });
 });
-})

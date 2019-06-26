@@ -31,4 +31,4 @@ const favoriteQueries = require("../db/queries.favorites.js");
        res.redirect(req.headers.referer);
      }
    }
- }
+ };

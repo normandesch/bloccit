@@ -36,4 +36,4 @@ module.exports = {
     app.use(middleware)
     app.get("/auth/fake", route)
   }
-}
+};
