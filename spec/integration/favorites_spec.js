@@ -128,8 +128,8 @@ describe("routes : favorites", () => {
             })
             .then(favorite => {
               expect(favorite).not.toBeNull();
-              expect(favorite.userId).toBe(this.user.id);
-              expect(favorite.postId).toBe(this.post.id);
+              expect(favorite.Id).toBe(this.user.id);
+              expect(favorite.Id).toBe(this.post.id);
               done();
             })
             .catch(err => {

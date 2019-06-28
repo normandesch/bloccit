@@ -55,7 +55,7 @@ describe("routes : posts", () => {
 
     it("should create a new flair and redirect", (done) => {
         const options = {
-            url: `${base}/${this.topic.id}/flairs/create`,
+            url: `${base}/${this.topic.id}/flairs/create}`,
             form: {
                 name: "Facebook",
                 color: "blue"
