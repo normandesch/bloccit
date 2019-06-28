@@ -16,7 +16,6 @@ const favoriteQueries = require("../db/queries.favorites.js");
      res.redirect(req.headers.referer);
    },
 
-
    destroy(req, res, next){
 
      if(req.user){

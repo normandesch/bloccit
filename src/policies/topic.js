@@ -23,4 +23,4 @@ module.exports = class TopicPolicy extends ApplicationPolicy {
  destroy() {
    return this.update();
  }
-}
+};

@@ -1,148 +1,157 @@
-const request = require ("request");
-const server = require ("../../src/server");
-const base = "http://localhost:3000/advertisements/";
+const request = require("request");
+const server = require("../../src/server");
+const base = "http://localhost:3000/users/";
 const sequelize = require("../../src/db/models/index").sequelize;
-const Advertisement = require("../../src/db/models").Advertisement;
+const User = require("../../src/db/models").User;
+const Topic = require("../../src/db/models").Topic;
+const Post = require("../../src/db/models").Post;
+const Comment = require("../../src/db/models").Comment;
 
-describe("routes : advertisements", () => {
+
+describe("routes : users", () => {
 
     beforeEach((done) => {
-        this.advertisement;
-        sequelize.sync({force: true}).then((res) => {
-
-            Advertisement.create({
-                title:"JS Frameworks",
-                description: "There is not a lot of them"
-            })
-            .then((advertisement) => {
-                this.advertisement = advertisement;
-                done();
-            })
-            .catch((err) => {
-                console.log(err);
-                done();
-            });
+        sequelize.sync({force: true})
+        .then(() => {
+            done();
+        })
+        .catch((err) => {
+            console.log(err);
+            done();
         });
     });
 
-    describe(" GET /advertisements", () => {
-
-        it("should return a status code 200 and all advertisements", (done) => {
-            request.get(base, (err, res, body) => {
-                expect(res.statusCode).toBe(200);
+    describe("GET /users/sign_up", () => {
+        it("should render a view with a sign up form", (done) => {
+            request.get(`${base}sign_up`, (err, res, body) => {
                 expect(err).toBeNull();
-                expect(body).toContain("Advertisements");
-                expect(body).toContain("JS Frameworks");
+                expect(body).toContain("Sign up");
                 done();
             });
         });
     });
 
-    describe("GET /advertisements/new", () => {
+    describe("POST /users", () => {
+            it("should create a new user with valid values and redirect", (done) => {
 
-        it("should render a new advertisement form", (done) => {
-            request.get(`${base}new`, (err, res, body) => {
-                expect(err).toBeNull();
-                expect(body).toContain("New Advertisement");
-                done();
-            });
-        });
-    });
-
-    describe("POST /advertisements/create", () => {
-        const options = {
-            url: `${base}create`,
-            form: {
-                title: "Google Add",
-                description: "Google add is cool"
-            }
-        };
-
-        it("should create a new advertisement and redirect", (done) =>{
-            request.post(options,
-                (err,res,body)=>{
-                    Advertisement.findOne({where: {title: "Google Add"}})
-                    .then((advertisement)=>{
-                        expect(res.statusCode).toBe(303);
-                        expect(advertisement.title).toBe("Google Add");
-                        expect(advertisement.description).toBe("Google add is cool");
-                        done();
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                        done();
-                    });
-                });
-        });
-    });
-
-    describe("GET /advertisements/:id", () => {
-
-        it("should render a view with the selected advertisement", (done) => {
-            request.get(`${base}${this.advertisement.id}`, (err, res, body) => {
-                expect(err).toBeNull();
-                expect(body).toContain("JS Frameworks");
-                done();
-            });
-        });
-    });
-
-    describe("POST /advertisements/:id/destroy", () => {
-
-        it("should delete the advertisement with the associated ID", (done) => {
-
-            Advertisement.findAll()
-            .then((advertisements) => {
-
-                const advertisementCountBeforeDelete = advertisements.length;
-
-                expect(advertisementCountBeforeDelete).toBe(1);
-
-                request.post(`${base}${this.advertisement.id}/destroy`, (err, res, body)=> {
-                    Advertisement.findAll()
-                    .then((advertisements)=> {
-                        expect(err).toBeNull();
-                        expect(advertisements.length).toBe(advertisementCountBeforeDelete - 1);
-                        done();
-                    })
-                });
-            });
-        });
-    });
-
-    describe("GET /advertisements/:id/edit", () => {
-        it("should render a view with an edit topic form", (done) => {
-            request.get(`${base}${this.advertisement.id}/edit`, (err, res,body) => {
-                expect(err).toBeNull();
-                expect(body).toContain("Edit Advertisement");
-                expect(body).toContain("JS Frameworks");
-                done();
-            });
-        });
-    });
-
-    describe("POST /advertisements/:id/update", () => {
-
-        it("should update the advertisement with the given values", (done) => {
-            const options = {
-                url: `${base}${this.advertisement.id}/update`,
+              const options = {
+                url: base,
                 form: {
-                    title: "JavaScript Frameworks",
-                    description: "There are not a lot of them"
+                  email: "user@example.com",
+                  password: "123456789"
                 }
-            };
-            request.post(options,
-                (err, res, body) => {
-                    expect(err).toBeNull();
+              }
 
-                    Advertisement.findOne({
-                        where: {id: this.advertisement.id}
-                    })
-                    .then((advertisement) => {
-                        expect(advertisement.title).toBe("JavaScript Frameworks");
-                        done();
-                    });
-                });
-        });
-    });
+              request.post(options,
+                (err, res, body) => {
+
+                  User.findOne({where: {email: "user@example.com"}})
+                  .then((user) => {
+                    expect(user).not.toBeNull();
+                    expect(user.email).toBe("user@example.com");
+                    expect(user.id).toBe(1);
+                    done();
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                    done();
+                  });
+                }
+              );
+            });
+
+            it("should not create a new user with invalid attributes and redirect", (done) => {
+              request.post(
+                {
+                  url: base,
+                  form: {
+                    email: "no",
+                    password: "123456789"
+                  }
+                },
+                (err, res, body) => {
+                  User.findOne({where: {email: "no"}})
+                  .then((user) => {
+                    expect(user).toBeNull();
+                    done();
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                    done();
+                  });
+                }
+              );
+            });
+
+          });
+          describe("GET /users/sign_in", () => {
+
+            it("should render a view with a sign in form", (done) => {
+              request.get(`${base}sign_in`, (err, res, body) => {
+                expect(err).toBeNull();
+                expect(body).toContain("Sign in");
+                done();
+              });
+            });
+
+          });
+
+          describe("GET /users/:id", () => {
+
+            beforeEach((done) => {
+
+              this.user;
+              this.post;
+              this.comment;
+
+              User.create({
+                email: "starman@tesla.com",
+                password: "Trekkie4lyfe"
+              })
+              .then((res) => {
+                this.user = res;
+
+                Topic.create({
+                  title: "Winter Games",
+                  description: "Post your Winter Games stories.",
+                  posts: [{
+                    title: "Snowman Building Competition",
+                    body: "So much snow!",
+                    userId: this.user.id
+                  }]
+                }, {
+                  include: {
+                    model: Post,
+                    as: "posts"
+                  }
+                })
+                .then((res) => {
+                  this.post = res.posts[0];
+
+                  Comment.create({
+                    body: "This comment is alright.",
+                    postId: this.post.id,
+                    userId: this.user.id
+                  })
+                  .then((res) => {
+                    this.comment = res;
+                    done();
+                  })
+                })
+              })
+
+            });
+
+            it("should present a list of comments and posts a user has created", (done) => {
+
+              request.get(`${base}${this.user.id}`, (err, res, body) => {
+
+                expect(body).toContain("Snowman Building Competition");
+                expect(body).toContain("This comment is alright.")
+                done();
+              });
+
+            });
+          });
+
 });
